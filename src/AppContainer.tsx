@@ -6,51 +6,39 @@ import {ActivityIndicator, HelperText, IconButton, Text, TextInput} from "react-
 import { ApiService } from "./services/api-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const genBoard = () => {
+    let password = "";
+    const symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    for (let i = 0; i < symbols.length; i++){
+        password += symbols.charAt(Math.floor(Math.random() * symbols.length));
+    }
+    return password;
+}
+
+
+const BOARD_KEY = '@board';
+
 export const AppContainer = () => {
     const [loading, setLoading] = useState(true);
-    const [hasBoard, setHasBoard] = useState(false);
-    const [board, setBoard] = useState('');
 
     useEffect(() => {
-        AsyncStorage.getItem('@board').then(resp => {
+        AsyncStorage.getItem(BOARD_KEY).then(async resp => {
             if (resp) {
                 ApiService.setEndPoint(resp);
-                setHasBoard(true)
+                setLoading(false)
+            } else {
+                const generatedBoard = genBoard();
+                await AsyncStorage.setItem(BOARD_KEY, generatedBoard);
+                ApiService.setEndPoint(generatedBoard);
+                setLoading(false)
             }
-        }).finally(() => setLoading(false))
+        });
     }, []);
-
-    const onChangeText = (text: string) => {
-        setBoard(text)
-    }
-
-    const saveBoard = () => {
-        AsyncStorage.setItem('@board', board);
-        ApiService.setEndPoint(board)
-        setHasBoard(true)
-    }
 
     if (loading) {
         return (
           <View style={styles.container}>
               <ActivityIndicator animating={true} />
-          </View>
-        )
-    }
-
-    if (!hasBoard) {
-        return  (
-          <View style={styles.container}>
-              <Text style={styles.title}>Этот экран не является тестовым! Для того что бы продолжить, введите свое имя и фамилию через тире:</Text>
-              <View style={styles.sender}>
-                  <View style={styles.input}>
-                      <TextInput label="Name" mode='outlined' textContentType="URL" value={board} onChangeText={onChangeText} />
-                      <HelperText type="info" visible>
-                         Пример: sergey-ivanov. Запрещается использовать другой формат!
-                      </HelperText>
-                  </View>
-                  <IconButton icon="send" disabled={!board.trim().length} onPress={saveBoard} />
-              </View>
           </View>
         )
     }
