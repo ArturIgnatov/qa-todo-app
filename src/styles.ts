@@ -11,15 +11,17 @@ export const styles = StyleSheet.create({
     sender: {
         width: '100%',
         flexDirection: 'row',
-        alignItems: 'center',
         justifyContent: 'space-between',
     },
 
     input: {
-        width: '80%'
+        width: '85%'
     },
 
     title: {
-        marginBottom: 8
+        fontWeight: "bold",
+        textAlign: 'center',
+        marginBottom: 16,
+        fontSize: 16
     }
 })

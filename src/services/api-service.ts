@@ -12,7 +12,7 @@ import {
 export type ApiMethodAgs<T extends (...args: any[]) => Promise<any>> = Awaited<Parameters<T>>
 
 class ApiServiceClazz {
-    private url = 'http://mobile-dev.oblakogroup.ru/candidate/qa-mobile';
+    private url = 'http://mobile-dev.oblakogroup.ru/candidate/';
 
     private instance = {
         get: <T>(url: string) => {
@@ -27,6 +27,10 @@ class ApiServiceClazz {
         patch: <T>(url: string, data: any) => {
             return fetch(this.url + url, { method: 'PATCH', body: JSON.stringify(data),  headers: { Accept: 'application/json', 'Content-Type': 'application/json' } })
         }
+    }
+
+    public setEndPoint = (boardId: string) => {
+        this.url = this.url + boardId;
     }
 
     public async getList() {
